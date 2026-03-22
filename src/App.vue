@@ -1,69 +1,50 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
-import SearchInstructions from './components/SearchInstructions.vue'
-import {type Ref, ref} from "vue";
-import {DictionaryEntry, parseDictionaryAPIResponse} from "@/models/DictionaryEntry.ts";
+import DictionarySearch from './components/DictionarySearch.vue'
+import DictionaryEntryDisplay from './components/DictionaryEntryDisplay.vue'
+import { type Ref, ref } from 'vue'
+import { type DictionaryEntry } from '@/models/DictionaryEntry.ts'
+import IconDocumentation from '@/components/IconDocumentation.vue'
 
-const dictionaryEntry: Ref<DictionaryEntry|undefined> = ref(undefined)
-const errorMessage: Ref<string|undefined> = ref(undefined)
-
-const searchTerm: Ref<string> = ref('')
-async function getWordInfo(word: string) {
-  const response = await fetch(
-    `https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`
-  )
-  return await response.json()
-}
-function setDictionaryEntry() {
-  if (searchTerm.value) {
-    dictionaryEntry.value = undefined
-    errorMessage.value = undefined
-    getWordInfo(searchTerm.value).then(response => {
-      try {
-        dictionaryEntry.value = parseDictionaryAPIResponse(response)[0]
-      } catch (error) {
-        errorMessage.value = 'Word not found. Please try another search term. A search term can only be a single word, without spaces or special characters.'
-      }
-    })
-  }
-}
-
+const dictionaryEntry: Ref<DictionaryEntry | undefined> = ref(undefined)
+const errorMessage: Ref<string | undefined> = ref(undefined)
 </script>
 
 <template>
   <header>
     <div class="wrapper">
-      <SearchInstructions v-model="searchTerm"/>
-      <button @click="setDictionaryEntry">Find!</button>
-      <p v-if="errorMessage">{{errorMessage}}</p>
-      <HelloWorld msg="You did it!" />
+      <h1 class="green">
+        <i><IconDocumentation /></i>
+        Dictionary
+      </h1>
+      <DictionarySearch
+        v-model:dictionaryEntry="dictionaryEntry"
+        v-model:errorMessage="errorMessage"
+      />
     </div>
-    <!-- <WordGeneralInfo /> -->
   </header>
 
   <main>
-    <p v-if="dictionaryEntry">{{JSON.stringify(dictionaryEntry).slice(0, 300)}}</p>
-    <TheWelcome />
+    <DictionaryEntryDisplay :entry="dictionaryEntry" :error-message="errorMessage" />
   </main>
 </template>
 
 <style scoped>
 header {
   line-height: 1.5;
+  display: grid;
+  place-content: center;
 }
 
 @media (min-width: 1024px) {
   header {
     display: flex;
     place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
+    margin: auto;
   }
 
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
+  main {
+    max-height: 80vh;
+    overflow: scroll;
   }
 }
 </style>

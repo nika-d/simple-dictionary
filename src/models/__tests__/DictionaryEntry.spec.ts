@@ -1,6 +1,10 @@
 import { describe, it, expect } from 'vitest'
 
-import { DictionaryEntry, DictionaryValidationError, parseDictionaryAPIResponse } from '../DictionaryEntry'
+import {
+  DictionaryEntry,
+  DictionaryValidationError,
+  parseDictionaryAPIResponse,
+} from '../DictionaryEntry'
 
 function makeValidEntry() {
   return {
@@ -90,4 +94,3 @@ describe('DictionaryEntry parser', () => {
     expectValidationError(() => DictionaryEntry.fromJSON(invalidEntry), 'entry.phonetics[0].text')
   })
 })
-
